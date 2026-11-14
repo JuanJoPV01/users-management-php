@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 final class WebRoutes
 {
-    /**
+    /** 
      * @return array<string, array<string, string>>
      */
     public static function routes(): array
@@ -61,6 +61,34 @@ final class WebRoutes
             'auth.forgot.send' => array(
                 'method' => 'POST',
                 'action' => 'forgot.send',
+            ),
+            'partidos.create' => array(
+                'method' => 'GET',
+                'action' => 'create',
+            ),
+            'partidos.store' => array(
+                'method' => 'POST',
+                'action' => 'store',
+            ),
+            'partidos.index' => array(
+                'method' => 'GET',
+                'action' => 'index',
+            ),
+            'partidos.show' => array(
+                'method' => 'GET',
+                'action' => 'show',
+            ),
+            'partidos.edit' => array(
+                'method' => 'GET',
+                'action' => 'edit',
+            ),
+            'partidos.update' => array(
+                'method' => 'POST',
+                'action' => 'update',
+            ),
+            'partidos.delete' => array(
+                'method' => 'POST',
+                'action' => 'delete',
             ),
         );
     }
