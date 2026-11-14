@@ -316,6 +316,54 @@ try {
             View::redirect('users.index');
             break;
 
+        case 'partidos.create':
+            View::render('partidos/create', buildPartidoPoliticoCreateViewData());
+            break;
+
+        case 'partidos.store':
+            $controller = DependencyInjection::getPartidoPoliticoController();
+            $form = getPartidoPoliticoFormData();
+            $controller->store($form);
+            Flash::setSuccess('Partido político registrado correctamente.');
+            View::redirect('partidos.index');
+            break;
+
+        case 'partidos.index':
+            $controller = DependencyInjection::getPartidoPoliticoController();
+            $data = $controller->index();
+            View::render('partidos/list', buildPartidoPoliticoListViewData($data));
+            break;
+
+        case 'partidos.show':
+            $controller = DependencyInjection::getPartidoPoliticoController();
+            $id = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $partido = $controller->show($id);
+            View::render('partidos/show', buildPartidoPoliticoShowViewData($partido));
+            break;
+
+        case 'partidos.edit':
+            $controller = DependencyInjection::getPartidoPoliticoController();
+            $id = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $data = $controller->edit($id);
+            View::render('partidos/edit', buildPartidoPoliticoEditViewData($data));
+            break;
+
+        case 'partidos.update':
+            $controller = DependencyInjection::getPartidoPoliticoController();
+            $form = getPartidoPoliticoFormData();
+            $controller->update($form);
+            Flash::setSuccess('Partido político actualizado correctamente.');
+            View::redirect('partidos.index');
+            break;
+
+        case 'partidos.delete':
+            $controller = DependencyInjection::getPartidoPoliticoController();
+            $id = isset($_POST['id']) ? trim((string) $_POST['id']) : '';
+            $controller->delete($id);
+            Flash::setSuccess('Partido político eliminado correctamente.');
+            View::redirect('partidos.index');
+            break;
+
         default:
             View::render('home', buildHomeViewData($msg));
             break;
