@@ -30,11 +30,10 @@ final class Connection
     public function createPdo(): PDO
     {
         $dsn = sprintf(
-            'mysql:host=%s;port=%d;dbname=%s;charset=%s',
+            'pgsql:host=%s;port=%d;dbname=%s',
             $this->host,
             $this->port,
-            $this->database,
-            $this->charset
+            $this->database
         );
 
         $pdo = new PDO(
@@ -47,6 +46,8 @@ final class Connection
                 PDO::ATTR_EMULATE_PREPARES => false,
             )
         );
+
+        $pdo->exec(sprintf("SET NAMES '%s'", 'UTF8'));
 
         return $pdo;
     }

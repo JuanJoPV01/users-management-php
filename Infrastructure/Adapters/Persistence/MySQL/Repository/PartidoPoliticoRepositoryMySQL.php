@@ -231,7 +231,7 @@ final class PartidoPoliticoRepositoryMySQL implements
                 created_at,
                 updated_at
             FROM partidos_politicos
-            WHERE (:search = \'\' OR nombre LIKE :pattern_nombre OR pais LIKE :pattern_pais)
+            WHERE (:search = \'\' OR nombre ILIKE :pattern_nombre OR pais ILIKE :pattern_pais)
             ORDER BY nombre ASC
             LIMIT :limit OFFSET :offset
         ';
@@ -252,7 +252,7 @@ final class PartidoPoliticoRepositoryMySQL implements
         $sql = '
             SELECT COUNT(*) AS total
             FROM partidos_politicos
-            WHERE (:search = \'\' OR nombre LIKE :pattern_nombre OR pais LIKE :pattern_pais)
+            WHERE (:search = \'\' OR nombre ILIKE :pattern_nombre OR pais ILIKE :pattern_pais)
         ';
 
         $statement = $this->pdo->prepare($sql);
