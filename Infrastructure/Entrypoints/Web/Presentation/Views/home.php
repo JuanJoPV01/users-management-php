@@ -25,4 +25,10 @@
     <li><strong>L:</strong> Listar usuarios</li>
 </ul>
 
+<h2>Módulo Partido Político (Ejercicio Asignado #24)</h2>
+<ul>
+    <li><a href="?route=partidos.index"><strong>L:</strong> Listar partidos políticos</a></li>
+    <li><a href="?route=partidos.create"><strong>C:</strong> Registrar nuevo partido político</a></li>
+</ul>
+
 <?php require __DIR__ . '/layouts/footer.php'; ?>

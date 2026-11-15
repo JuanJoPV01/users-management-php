@@ -77,8 +77,11 @@ if ($httpMethod !== $definition['method']) {
     exit;
 }
 
-// Protect all user management routes behind authentication.
-$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store');
+// Protect routes behind authentication (allow public access to home, auth, and partidos).
+$publicActions = array(
+    'home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store',
+    'partidos.create', 'partidos.store', 'partidos.index', 'partidos.show', 'partidos.edit', 'partidos.update', 'partidos.delete'
+);
 if (!in_array($definition['action'], $publicActions, true) && !isLoggedIn()) {
     Flash::setMessage('Debes iniciar sesión para acceder a esta sección.');
     View::redirect('auth.login');
@@ -317,51 +320,46 @@ try {
             break;
 
         case 'partidos.create':
-            View::render('partidos/create', buildPartidoPoliticoCreateViewData());
+            $controller = DependencyInjection::getPartidoPoliticoController();
+            View::render('partidos/create', $controller->create());
             break;
 
         case 'partidos.store':
             $controller = DependencyInjection::getPartidoPoliticoController();
             $form = getPartidoPoliticoFormData();
             $controller->store($form);
-            Flash::setSuccess('Partido político registrado correctamente.');
-            View::redirect('partidos.index');
             break;
 
         case 'partidos.index':
             $controller = DependencyInjection::getPartidoPoliticoController();
             $data = $controller->index();
-            View::render('partidos/list', buildPartidoPoliticoListViewData($data));
+            View::render('partidos/list', $data);
             break;
 
         case 'partidos.show':
             $controller = DependencyInjection::getPartidoPoliticoController();
             $id = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
-            $partido = $controller->show($id);
-            View::render('partidos/show', buildPartidoPoliticoShowViewData($partido));
+            $data = $controller->show($id);
+            View::render('partidos/show', $data);
             break;
 
         case 'partidos.edit':
             $controller = DependencyInjection::getPartidoPoliticoController();
             $id = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
             $data = $controller->edit($id);
-            View::render('partidos/edit', buildPartidoPoliticoEditViewData($data));
+            View::render('partidos/edit', $data);
             break;
 
         case 'partidos.update':
             $controller = DependencyInjection::getPartidoPoliticoController();
             $form = getPartidoPoliticoFormData();
             $controller->update($form);
-            Flash::setSuccess('Partido político actualizado correctamente.');
-            View::redirect('partidos.index');
             break;
 
         case 'partidos.delete':
             $controller = DependencyInjection::getPartidoPoliticoController();
             $id = isset($_POST['id']) ? trim((string) $_POST['id']) : '';
             $controller->delete($id);
-            Flash::setSuccess('Partido político eliminado correctamente.');
-            View::redirect('partidos.index');
             break;
 
         default:
@@ -554,3 +552,27 @@ function validateUpdateUserForm(array $form): array
 
     return $errors;
 }
+
+/**
+ * @return array<string, mixed>
+ */
+function getPartidoPoliticoFormData(): array
+{
+    return array(
+        'id' => isset($_POST['id']) && trim((string) $_POST['id']) !== ''
+            ? trim((string) $_POST['id'])
+            : generateUuid4(),
+        'nombre' => isset($_POST['nombre']) ? trim((string) $_POST['nombre']) : '',
+        'eslogan' => isset($_POST['eslogan']) ? trim((string) $_POST['eslogan']) : '',
+        'presidente' => isset($_POST['presidente']) ? trim((string) $_POST['presidente']) : '',
+        'secretario' => isset($_POST['secretario']) ? trim((string) $_POST['secretario']) : '',
+        'tesorero' => isset($_POST['tesorero']) ? trim((string) $_POST['tesorero']) : '',
+        'pais' => isset($_POST['pais']) ? trim((string) $_POST['pais']) : '',
+        'num_presidentes' => isset($_POST['num_presidentes']) ? (int) $_POST['num_presidentes'] : 0,
+        'num_gobernadores' => isset($_POST['num_gobernadores']) ? (int) $_POST['num_gobernadores'] : 0,
+        'num_alcaldes' => isset($_POST['num_alcaldes']) ? (int) $_POST['num_alcaldes'] : 0,
+        'num_concejales' => isset($_POST['num_concejales']) ? (int) $_POST['num_concejales'] : 0,
+        'num_congresistas' => isset($_POST['num_congresistas']) ? (int) $_POST['num_congresistas'] : 0,
+    );
+}
+

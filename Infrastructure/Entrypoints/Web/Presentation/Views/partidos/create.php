@@ -20,7 +20,7 @@
     <div class="form-group">
         <label for="id">ID</label><br>
         <input type="text" id="id" name="id"
-            value="<?= htmlspecialchars($old['id'] ?? generateUuid4(), ENT_QUOTES, 'UTF-8') ?>">
+            value="<?= htmlspecialchars((string) ($old['id'] ?? (function_exists('generateUuid4') ? generateUuid4() : '')), ENT_QUOTES, 'UTF-8') ?>">
     </div>
 
     <div class="form-group">
@@ -103,5 +103,3 @@
 </form>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>
-<?php require __DIR__ . '/../layouts/header.php'; ?>
-<?php require __DIR__ . '/../layouts/menu.php'; ?>
