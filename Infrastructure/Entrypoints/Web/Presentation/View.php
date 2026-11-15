@@ -20,9 +20,10 @@ final class View
         require $file;
     }
 
-    public static function redirect(string $route): void
+    public static function redirect(string $route, array $params = array()): void
     {
-        header('Location: ?route=' . urlencode($route));
+        $query = array_merge(array('route' => $route), $params);
+        header('Location: ?' . http_build_query($query));
         exit;
     }
 }

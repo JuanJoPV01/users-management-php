@@ -7,12 +7,20 @@ declare(strict_types=1);
 // Detectamos ese caso comparando la URL solicitada con la ruta pública esperada.
 
 (function (): void{
-    $requestPath = rtrim(
-        (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH),
-        '/'
-    );
+    if (php_sapi_name() === 'cli-server') {
+        return;
+    }
+
+    $rawPath = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
+    $requestPath = rtrim(str_replace('\\', '/', $rawPath), '/');
+
     // dirname de /crud-usuarios/public/index.php  →  /crud-usuarios/public
-    $publicBase = rtrim(dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '/index.php')), '/');
+    $scriptDir = dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '/index.php'));
+    $publicBase = rtrim(str_replace('\\', '/', $scriptDir), '/');
+
+    if ($publicBase === '' || $publicBase === '/') {
+        return;
+    }
 
     // Si la URL pedida no comienza con /…/public/, fue un acceso directo indebido.
     if ($requestPath !== $publicBase && !str_starts_with($requestPath, $publicBase . '/')) {
