@@ -117,6 +117,8 @@ final class ClassLoader
         'UserResponse' => 'Infrastructure/Entrypoints/Web/Controllers/Dto/UserResponse.php',
         'UserWebMapper' => 'Infrastructure/Entrypoints/Web/Controllers/Mapper/UserWebMapper.php',
         'UserController' => 'Infrastructure/Entrypoints/Web/Controllers/UserController.php',
+        'PartidoPoliticoWebMapper' => 'Infrastructure/Entrypoints/Web/Controllers/Mapper/PartidoPoliticoWebMapper.php',
+        'PartidoPoliticoController' => 'Infrastructure/Entrypoints/Web/Controllers/PartidoPoliticoController.php',
         'WebRoutes' => 'Infrastructure/Entrypoints/Web/Controllers/Config/WebRoutes.php',
 
         'View' => 'Infrastructure/Entrypoints/Web/Presentation/View.php',

@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/Mapper/PartidoPoliticoWebMapper.php';
 
-require_once __DIR__ . '/../../Ports/In/CreatePartidoPoliticoUseCase.php';
-require_once __DIR__ . '/../../Ports/In/UpdatePartidoPoliticoUseCase.php';
-require_once __DIR__ . '/../../Ports/In/GetPartidoPoliticoByIdUseCase.php';
-require_once __DIR__ . '/../../Ports/In/GetAllPartidosPoliticosUseCase.php';
-require_once __DIR__ . '/../../Ports/In/DeletePartidoPoliticoUseCase.php';
+require_once __DIR__ . '/../../../../Application/Ports/In/CreatePartidoPoliticoUseCase.php';
+require_once __DIR__ . '/../../../../Application/Ports/In/UpdatePartidoPoliticoUseCase.php';
+require_once __DIR__ . '/../../../../Application/Ports/In/GetPartidoPoliticoByIdUseCase.php';
+require_once __DIR__ . '/../../../../Application/Ports/In/GetAllPartidosPoliticosUseCase.php';
+require_once __DIR__ . '/../../../../Application/Ports/In/DeletePartidoPoliticoUseCase.php';
+
+require_once __DIR__ . '/../../../../Application/Services/Dto/Queries/GetAllPartidosPoliticosQuery.php';
+require_once __DIR__ . '/../../../../Application/Services/Dto/Queries/GetPartidoPoliticoByIdQuery.php';
+require_once __DIR__ . '/../../../../Application/Services/Dto/Commands/DeletePartidoPoliticoCommand.php';
+
+require_once __DIR__ . '/../../../../Domain/Exceptions/PartidoPoliticoAlreadyExistsException.php';
+require_once __DIR__ . '/../../../../Domain/Exceptions/PartidoPoliticoNotFoundException.php';
 
 final class PartidoPoliticoController
 {
@@ -40,9 +47,14 @@ final class PartidoPoliticoController
         $query = new GetAllPartidosPoliticosQuery();
         $partidos = $this->getAllPartidosPoliticosUseCase->execute($query);
 
+        $items = array();
+        foreach ($partidos->items() as $item) {
+            $items[] = $this->mapper->fromPartidoPoliticoToResponse($item);
+        }
+
         return array(
             'pageTitle' => 'Lista de partidos políticos',
-            'partidos' => $partidos->items(),
+            'partidos' => $items,
             'total' => $partidos->total(),
             'page' => $partidos->page(),
             'limit' => $partidos->limit(),
@@ -53,21 +65,27 @@ final class PartidoPoliticoController
 
     public function show(string $id): array
     {
-        $query = new GetPartidoPoliticoByIdQuery($id);
-        $partido = $this->getPartidoPoliticoByIdUseCase->execute($query);
+        try {
+            $query = new GetPartidoPoliticoByIdQuery($id);
+            $partido = $this->getPartidoPoliticoByIdUseCase->execute($query);
 
-        return array(
-            'pageTitle' => 'Detalle de partido político',
-            'partido' => $this->mapper->fromPartidoPoliticoToResponse($partido),
-            'message' => Flash::message(),
-        );
+            return array(
+                'pageTitle' => 'Detalle de partido político',
+                'partido' => $this->mapper->fromPartidoPoliticoToResponse($partido),
+                'message' => Flash::message(),
+            );
+        } catch (PartidoPoliticoNotFoundException $e) {
+            Flash::setMessage($e->getMessage());
+            View::redirect('partidos.index');
+            exit;
+        }
     }
 
     public function create(): array
     {
         return array(
             'pageTitle' => 'Registrar partido político',
-            'page' => Flash::message(),
+            'message' => Flash::message(),
             'success' => Flash::success(),
             'errors' => Flash::errors(),
             'old' => Flash::old(),
@@ -77,22 +95,7 @@ final class PartidoPoliticoController
     public function store(array $formData): void
     {
         try {
-            $request = array(
-                'id' => $formData['id'] ?? '',
-                'nombre' => $formData['nombre'] ?? '',
-                'eslogan' => $formData['eslogan'] ?? '',
-                'presidente' => $formData['presidente'] ?? '',
-                'secretario' => $formData['secretario'] ?? '',
-                'tesorero' => $formData['tesorero'] ?? '',
-                'pais' => $formData['pais'] ?? '',
-                'num_presidentes' => $formData['num_presidentes'] ?? 0,
-                'num_gobernadores' => $formData['num_gobernadores'] ?? 0,
-                'num_alcaldes' => $formData['num_alcaldes'] ?? 0,
-                'num_concejales' => $formData['num_concejales'] ?? 0,
-                'num_congresistas' => $formData['num_congresistas'] ?? 0,
-            );
-
-            $command = $this->mapper->fromCreateRequestToCommand($request);
+            $command = $this->mapper->fromCreateRequestToCommand($formData);
             $partido = $this->createPartidoPoliticoUseCase->execute($command);
 
             Flash::setSuccess('Partido político registrado correctamente.');
@@ -110,22 +113,28 @@ final class PartidoPoliticoController
 
     public function edit(string $id): array
     {
-        $query = new GetPartidoPoliticoByIdQuery($id);
-        $partido = $this->getPartidoPoliticoByIdUseCase->execute($query);
+        try {
+            $query = new GetPartidoPoliticoByIdQuery($id);
+            $partido = $this->getPartidoPoliticoByIdUseCase->execute($query);
 
-        return array(
-            'pageTitle' => 'Editar partido político',
-            'partido' => $this->mapper->fromPartidoPoliticoToResponse($partido),
-            'message' => Flash::message(),
-            'errors' => Flash::errors(),
-            'old' => Flash::old(),
-        );
+            return array(
+                'pageTitle' => 'Editar partido político',
+                'partido' => $this->mapper->fromPartidoPoliticoToResponse($partido),
+                'message' => Flash::message(),
+                'errors' => Flash::errors(),
+                'old' => Flash::old(),
+            );
+        } catch (PartidoPoliticoNotFoundException $e) {
+            Flash::setMessage($e->getMessage());
+            View::redirect('partidos.index');
+            exit;
+        }
     }
 
     public function update(array $formData): void
     {
         try {
-            $command = $this->mapper->fromUpdateCommandToRequest($formData);
+            $command = $this->mapper->fromUpdateRequestToCommand($formData);
             $partido = $this->updatePartidoPoliticoUseCase->execute($command);
 
             Flash::setSuccess('Partido político actualizado correctamente.');

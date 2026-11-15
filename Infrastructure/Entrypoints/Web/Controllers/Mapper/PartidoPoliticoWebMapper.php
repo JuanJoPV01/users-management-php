@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/Ports/In/CreatePartidoPoliticoUseCase.php';
-require_once __DIR__ . '/Ports/In/UpdatePartidoPoliticoUseCase.php';
-require_once __DIR__ . '/Ports/In/GetPartidoPoliticoByIdUseCase.php';
-require_once __DIR__ . '/Ports/In/GetAllPartidosPoliticosUseCase.php';
-require_once __DIR__ . '/Ports/In/DeletePartidoPoliticoUseCase.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Commands/CreatePartidoPoliticoCommand.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Commands/UpdatePartidoPoliticoCommand.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Commands/DeletePartidoPoliticoCommand.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Queries/GetPartidoPoliticoByIdQuery.php';
 
-require_once __DIR__ . '/Mappers/UserWebMapper.php';
-
-require_once __DIR__ . '/../../Domain/Models/UserModel.php';
+require_once __DIR__ . '/../../../../../Domain/Models/PartidoPoliticoModel.php';
 
 final class PartidoPoliticoWebMapper
 {
@@ -32,40 +29,55 @@ final class PartidoPoliticoWebMapper
         );
     }
 
-    public function fromCreateRequestToCommand($request): CreatePartidoPoliticoCommand
+    public function fromCreateRequestToCommand(array $request): CreatePartidoPoliticoCommand
     {
+        $id = isset($request['id']) && trim((string) $request['id']) !== ''
+            ? trim((string) $request['id'])
+            : (function_exists('generateUuid4') ? generateUuid4() : uniqid('partido_', true));
+
         return new CreatePartidoPoliticoCommand(
-            $request['id'] ?? generateUuid4(),
-            $request['nombre'],
-            $request['eslogan'],
-            $request['presidente'],
-            $request['secretario'],
-            $request['tesorero'],
-            $request['pais'],
-            $request['num_presidentes'] ?? 0,
-            $request['num_gobernadores'] ?? 0,
-            $request['num_alcaldes'] ?? 0,
-            $request['num_concejales'] ?? 0,
-            $request['num_congresistas'] ?? 0
+            $id,
+            (string) ($request['nombre'] ?? ''),
+            (string) ($request['eslogan'] ?? ''),
+            (string) ($request['presidente'] ?? ''),
+            (string) ($request['secretario'] ?? ''),
+            (string) ($request['tesorero'] ?? ''),
+            (string) ($request['pais'] ?? ''),
+            (int) ($request['num_presidentes'] ?? 0),
+            (int) ($request['num_gobernadores'] ?? 0),
+            (int) ($request['num_alcaldes'] ?? 0),
+            (int) ($request['num_concejales'] ?? 0),
+            (int) ($request['num_congresistas'] ?? 0)
         );
     }
 
-    public function fromUpdateCommandToRequest(UpdatePartidoPoliticoCommand $command): array
+    public function fromUpdateRequestToCommand(array $request): UpdatePartidoPoliticoCommand
     {
-        return array(
-            'id' => $command->getId(),
-            'nombre' => $command->getNombre(),
-            'eslogan' => $command->getEslogan(),
-            'presidente' => $command->getPresidente(),
-            'secretario' => $command->getSecretario(),
-            'tesorero' => $command->getTesorero(),
-            'pais' => $command->getPais(),
-            'num_presidentes' => $command->getNumPresidentes(),
-            'num_gobernadores' => $command->getNumGobernadores(),
-            'num_alcaldes' => $command->getNumAlcaldes(),
-            'num_concejales' => $command->getNumConcejales(),
-            'num_congresistas' => $command->getNumCongresistas(),
+        return new UpdatePartidoPoliticoCommand(
+            (string) ($request['id'] ?? ''),
+            (string) ($request['nombre'] ?? ''),
+            (string) ($request['eslogan'] ?? ''),
+            (string) ($request['presidente'] ?? ''),
+            (string) ($request['secretario'] ?? ''),
+            (string) ($request['tesorero'] ?? ''),
+            (string) ($request['pais'] ?? ''),
+            (int) ($request['num_presidentes'] ?? 0),
+            (int) ($request['num_gobernadores'] ?? 0),
+            (int) ($request['num_alcaldes'] ?? 0),
+            (int) ($request['num_concejales'] ?? 0),
+            (int) ($request['num_congresistas'] ?? 0)
         );
+    }
+
+    public function fromUpdateCommandToRequest($input): UpdatePartidoPoliticoCommand
+    {
+        if (is_array($input)) {
+            return $this->fromUpdateRequestToCommand($input);
+        }
+        if ($input instanceof UpdatePartidoPoliticoCommand) {
+            return $input;
+        }
+        throw new InvalidArgumentException('Datos inválidos para actualizar partido político.');
     }
 
     public function fromIdToGetByIdQuery(string $id): GetPartidoPoliticoByIdQuery

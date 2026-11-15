@@ -156,4 +156,96 @@ final class DependencyInjection
             self::getUserRepository()
         );
     }
+
+    public static function getPartidoPoliticoPersistenceMapper(): PartidoPoliticoPersistenceMapper
+    {
+        ClassLoader::loadClass('PartidoPoliticoPersistenceMapper');
+
+        return new PartidoPoliticoPersistenceMapper();
+    }
+
+    public static function getPartidoPoliticoRepository(): PartidoPoliticoRepositoryMySQL
+    {
+        ClassLoader::loadClass('PartidoPoliticoRepositoryMySQL');
+
+        return new PartidoPoliticoRepositoryMySQL(
+            self::getPdo(),
+            self::getPartidoPoliticoPersistenceMapper()
+        );
+    }
+
+    public static function getCreatePartidoPoliticoUseCase(): CreatePartidoPoliticoUseCase
+    {
+        ClassLoader::loadClass('CreatePartidoPoliticoService');
+        $repository = self::getPartidoPoliticoRepository();
+
+        return new CreatePartidoPoliticoService(
+            $repository,
+            $repository
+        );
+    }
+
+    public static function getUpdatePartidoPoliticoUseCase(): UpdatePartidoPoliticoUseCase
+    {
+        ClassLoader::loadClass('UpdatePartidoPoliticoService');
+        $repository = self::getPartidoPoliticoRepository();
+
+        return new UpdatePartidoPoliticoService(
+            $repository,
+            $repository,
+            $repository
+        );
+    }
+
+    public static function getGetPartidoPoliticoByIdUseCase(): GetPartidoPoliticoByIdUseCase
+    {
+        ClassLoader::loadClass('GetPartidoPoliticoByIdService');
+
+        return new GetPartidoPoliticoByIdService(
+            self::getPartidoPoliticoRepository()
+        );
+    }
+
+    public static function getGetAllPartidosPoliticosUseCase(): GetAllPartidosPoliticosUseCase
+    {
+        ClassLoader::loadClass('GetAllPartidosPoliticosService');
+        $repository = self::getPartidoPoliticoRepository();
+
+        return new GetAllPartidosPoliticosService(
+            $repository,
+            $repository
+        );
+    }
+
+    public static function getDeletePartidoPoliticoUseCase(): DeletePartidoPoliticoUseCase
+    {
+        ClassLoader::loadClass('DeletePartidoPoliticoService');
+        $repository = self::getPartidoPoliticoRepository();
+
+        return new DeletePartidoPoliticoService(
+            $repository,
+            $repository
+        );
+    }
+
+    public static function getPartidoPoliticoWebMapper(): PartidoPoliticoWebMapper
+    {
+        ClassLoader::loadClass('PartidoPoliticoWebMapper');
+
+        return new PartidoPoliticoWebMapper();
+    }
+
+    public static function getPartidoPoliticoController(): PartidoPoliticoController
+    {
+        ClassLoader::loadClass('PartidoPoliticoController');
+
+        return new PartidoPoliticoController(
+            self::getCreatePartidoPoliticoUseCase(),
+            self::getUpdatePartidoPoliticoUseCase(),
+            self::getGetPartidoPoliticoByIdUseCase(),
+            self::getGetAllPartidosPoliticosUseCase(),
+            self::getDeletePartidoPoliticoUseCase(),
+            self::getPartidoPoliticoWebMapper()
+        );
+    }
 }

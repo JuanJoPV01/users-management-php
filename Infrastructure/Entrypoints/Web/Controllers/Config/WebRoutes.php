@@ -64,31 +64,31 @@ final class WebRoutes
             ),
             'partidos.create' => array(
                 'method' => 'GET',
-                'action' => 'create',
+                'action' => 'partidos.create',
             ),
             'partidos.store' => array(
                 'method' => 'POST',
-                'action' => 'store',
+                'action' => 'partidos.store',
             ),
             'partidos.index' => array(
                 'method' => 'GET',
-                'action' => 'index',
+                'action' => 'partidos.index',
             ),
             'partidos.show' => array(
                 'method' => 'GET',
-                'action' => 'show',
+                'action' => 'partidos.show',
             ),
             'partidos.edit' => array(
                 'method' => 'GET',
-                'action' => 'edit',
+                'action' => 'partidos.edit',
             ),
             'partidos.update' => array(
                 'method' => 'POST',
-                'action' => 'update',
+                'action' => 'partidos.update',
             ),
             'partidos.delete' => array(
                 'method' => 'POST',
-                'action' => 'delete',
+                'action' => 'partidos.delete',
             ),
         );
     }
